@@ -6,7 +6,7 @@
 
 * You build the UI of your app just like building a regular React webpage (this project is even setup using `create-react-app` with the Microsoft TypeScript starter).
 
-* Your UI is hosted in a native Windows app using CefSharp (a Chromium wrapper for .NET).
+* Your UI is hosted in a native Windows (WinForms) app using CefSharp (a Chromium wrapper for .NET).
 
   > **Why not WPF?**  
   > When using CefSharp WinForms is a lot faster than WPF.
@@ -15,9 +15,9 @@
 
 ### What's the difference between this and Electron?
 
-Basically that it uses .NET and C# for the bridge instead of Node.js (JavaScript). Also this is still a cey small project and you have to build the bridge classes yourselves.
+Basically that it uses .NET and C# for the bridge instead of Node.js (JavaScript). Also this is still a pretty small project and you have to build the bridge classes yourselves (in Electron a file system API is available right away and so on).
 
-However this is the perfect project for those of us coming from a WinForms, WPF or just .NET backend background.
+However this is the perfect project for those of us coming from a WinForms, WPF or just .NET backend background. It's also perfect if you already have an existing C# library that you want to use in your app.
 
 ### Preloaded libraries
 
@@ -96,3 +96,7 @@ const files = await fileBridge.getDesktopFiles();
 To modify how the CefSharp browser instance behaves read about it here:
 
 * https://github.com/cefsharp/CefSharp/wiki/General-Usage
+
+A great article about different UI Framework options:
+
+* https://hackernoon.com/the-coolest-react-ui-frameworks-for-your-new-react-app-ad699fffd651
