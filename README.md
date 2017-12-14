@@ -6,7 +6,7 @@
 
 * You build the UI of your app just like building a regular React webpage (this project is even setup using `create-react-app` with the Microsoft TypeScript starter).
 
-* Your UI is hosted in a native Windows app using CefSharp (a Chromium wrapper for .NET).
+* Your UI is hosted in a native Windows (WinForms) app using CefSharp (a Chromium wrapper for .NET).
 
   > **Why not WPF?**  
   > When using CefSharp WinForms is a lot faster than WPF.
