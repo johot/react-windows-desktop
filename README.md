@@ -15,9 +15,9 @@
 
 ### What's the difference between this and Electron?
 
-Basically that it uses .NET and C# for the bridge instead of Node.js (JavaScript). Also this is still a cey small project and you have to build the bridge classes yourselves.
+Basically that it uses .NET and C# for the bridge instead of Node.js (JavaScript). Also this is still a pretty small project and you have to build the bridge classes yourselves (in Electron a file system API is available right away and so on).
 
-However this is the perfect project for those of us coming from a WinForms, WPF or just .NET backend background.
+However this is the perfect project for those of us coming from a WinForms, WPF or just .NET backend background. It's also perfect if you already have an existing C# library that you want to use in your app.
 
 ### Preloaded libraries
 
