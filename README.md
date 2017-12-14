@@ -96,3 +96,7 @@ const files = await fileBridge.getDesktopFiles();
 To modify how the CefSharp browser instance behaves read about it here:
 
 * https://github.com/cefsharp/CefSharp/wiki/General-Usage
+
+A great article about different UI Framework options:
+
+* https://hackernoon.com/the-coolest-react-ui-frameworks-for-your-new-react-app-ad699fffd651
