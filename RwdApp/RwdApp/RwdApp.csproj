@@ -120,9 +120,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BridgeMediator.cs" />
     <Compile Include="Bridges.cs" />
     <Compile Include="Bridges\DialogBridge.cs" />
     <Compile Include="Bridges\FileBridge.cs" />
+    <Compile Include="Bridges\TimeBridge.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -19,6 +19,7 @@ namespace RwdApp
 
 			string url = "file:///index.html";
 			bool showDeveloperConsole = false;
+
 #if DEBUG
 			url = "http://localhost:3000";
 
@@ -28,7 +29,7 @@ namespace RwdApp
 			};
 #endif
 
-			this.Controls.Add(new ReactHost(url, showDeveloperConsole, availableBridges.GetAvailableBridges())
+			this.Controls.Add(new ReactHost(url, showDeveloperConsole, availableBridges.GetBridges())
 			{
 				Dock = DockStyle.Fill
 			});

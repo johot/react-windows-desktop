@@ -8,12 +8,13 @@ namespace RwdApp
 {
 	public class Bridges
 	{
-		public IEnumerable<object> GetAvailableBridges()
+		public IEnumerable<object> GetBridges()
 		{
 			return new List<object>()
 			{
 				new FileBridge(),
-				new DialogBridge()
+				new DialogBridge(),
+				new TimeBridge()
 			};
 		}
 	}

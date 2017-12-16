@@ -48,24 +48,26 @@ The app should now show the UI you built using React!
 
 * All UI code goes into the `RwdReactUI` project. Use you favorite editor (we use VS Code).
 
-### Creating a TypeScript <-> C# Bridge
+### TypeScript <-> C# Bridges
 
-A Bridge class is a regular .NET C# Class. From TypeScript you will be able to invoke methods on these classes and get back results. You can see some sample bridges in the `Bridges` folder in the `RwdApp` solution.
+A Bridge class is a regular .NET C# Class. From TypeScript you will be able to invoke methods on these classes and get back results. While the default CefSharp solution only allows simple data types to be returned (`string`, `int`, `boolean` etc) we have built our own layer on top of this that will **automatically** serialize complex objects into Json! So no more limitations to how advanced data your bridge classes can return, it just works.
+
+We have also built an event system that makes it really easy to run TypeScript code when an event is fired from the C# side.
+
+You can see some sample bridges in the `Bridges` folder in the `RwdApp` solution.
 
 > **Important limitations:**
 >
-> * Because of limitations of CefSharp you can only return basic values like `string`, `int`, `boolean` from your Bridge classes. To get around this limitation use `JsonConvert.Serialize(...)` to convert more advanced data (including arrays) into Json strings.
->
-> * On the C# side your code should **not** be `async`. It will be run in it's own thread by CefSharp though so the GUI should not lock up.
+> On the C# side your bridge classes can currently **not** use `async` methods. It will be run in it's own thread by CefSharp though so the GUI should not lock up.
 
 #### Registering a new Bridge class
 
 Edit the `Bridges.cs` file in the root of the `RwdApp` project.
 
-#### Using a registered Bridge from TypeScript
+#### Calling a bridge class from TypeScript and return values
 
 ```ts
-import BridgeManager from "./bridge-manager";
+import bridgeManager from "./bridge-manager";
 
 // For convenience create a TypeScript interface that mirrors the C# interface
 interface FileBridge {
@@ -73,14 +75,34 @@ interface FileBridge {
 }
 
 // Get bridge instance
-const fileBridge = new BridgeManager().get<FileBridge>("FileBridge", true); // true means we will automatically json parse all data returned by this class
+const fileBridge = await bridgeManager.getBridge<FileBridge>("fileBridge"); // The name should be that of the bridge in camel-case
 
 const files = await fileBridge.getDesktopFiles();
 ```
 
-> **Note:** Because of the asynchronous nature of JavaScript the Bridge classes will be asynchronous, therefor use `async` `await` and `Promise<T>` on the TypeScript side.
+#### Listening to Bridge events
 
-> **Note:** By passing `true` as the second argument to the `BridgeManager.get<T>(bridgeType, automaticallyJsonParse)` method a bridge instance that automatically performs `JSON.parse(...)` is returned. Remember that the corresponding C# class must in that case return json string for all it's methods.
+To fire an event from C# just create a regular event of type `Action` or `Action<T>`:
+
+```cs
+public event Action<TimeBridgeEventArg> TimeUpdated;
+
+// Raise event
+TimeUpdated(new TimeBridgeEventArg() { Time = DateTime.Now.ToString("HH:mm:ss") });
+```
+
+> Note: Your event args should be an object, primitives like `int` or other value types are not yet supported (but might be in a future update).
+
+```ts
+const timeBridge = await bridgeManager.getBridge<TimeBridge>("timeBridge");
+timeBridge.addEventListener("timeUpdated", this._timeUpdated);
+
+_timeUpdated = arg => {
+  console.log("Time updated! The time is now: " + arg.time);
+};
+```
+
+> **Note:** Because of the asynchronous nature of JavaScript the Bridge classes will be asynchronous, therefor use `async` `await` and `Promise<T>` on the TypeScript side.
 
 ## Building for production
 

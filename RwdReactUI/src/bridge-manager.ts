@@ -1,39 +1,73 @@
-export default class BridgeManager {
-  get<T>(bridgeType: string, automaticallyJsonParse: boolean = false): T {
-    let originalBridge = (window as any)[bridgeType] as any;
+interface BridgeMediator {
+  callMethod(bridgeName: string, methodName: string, args: string): string;
+  getBridgeMethods(bridgeName: string): string;
+}
 
-    if (automaticallyJsonParse) {
-      let wrappedBrige: any = {};
+class BridgeManager {
+  // We always return the same instances, this is needed so we can handle events in a centralized way
+  static bridgeInstances = {};
 
-      for (var key in originalBridge) {
-        if (originalBridge.hasOwnProperty(key)) {
-          let v = originalBridge[key];
+  constructor() {
+    (window as any).bridgeManager = this;
+  }
 
-          if (typeof v === "function") {
-            let keyCopy = key;
-            let originalFn = originalBridge[keyCopy];
-            // Let's rewrite it slightly
-            wrappedBrige[keyCopy] = this._parseJsonWrapper(originalFn);
-          }
-        }
-      }
-      return wrappedBrige;
+  async getBridge<T>(bridgeName: string): Promise<T> {
+    // Do we have an existing?
+    if (BridgeManager.bridgeInstances[bridgeName] !== undefined) {
+      return BridgeManager.bridgeInstances[bridgeName];
     } else {
-      return originalBridge;
+      let bridgeMediator: BridgeMediator = (window as any).bridgeMediator;
+
+      // Generate a bridge class dynamically
+      let methodNames = JSON.parse(await bridgeMediator.getBridgeMethods(bridgeName));
+
+      let bridgeInstance: any = new Bridge();
+
+      // Lets add all methods
+      methodNames.forEach(methodName => {
+        // We create a function with the proper name
+        bridgeInstance[methodName] = async (...args) => {
+          let fnResult: string = await bridgeMediator.callMethod(bridgeName, methodName, JSON.stringify(args));
+
+          // Lets deserialize
+          let deserializedReturnValue = JSON.parse(fnResult);
+          return deserializedReturnValue;
+        };
+      });
+
+      BridgeManager.bridgeInstances[bridgeName] = bridgeInstance;
+
+      return bridgeInstance as T;
+    }
+  }
+}
+
+export class Bridge {
+  private triggerEvent(eventName: string, args: any) {
+    let listeners = this.getEventListeners(eventName);
+
+    listeners.forEach(listener => {
+      listener(args);
+    });
+  }
+
+  private _eventListeners = {};
+
+  getEventListeners(eventName: string): any[] {
+    if (this._eventListeners[eventName] === undefined) {
+      return [];
+    } else {
+      return this._eventListeners[eventName];
     }
   }
 
-  _parseJsonWrapper = function(fn: any) {
-    return function() {
-      let args = arguments;
-
-      const promise = new Promise((resolve, reject) => {
-        fn.apply(fn as any, args).then(finalResult => {
-          resolve(JSON.parse(finalResult));
-        });
-      });
-
-      return promise;
-    };
-  };
+  addEventListener(eventName: string, delegate) {
+    if (this._eventListeners[eventName] === undefined) {
+      this._eventListeners[eventName] = [delegate];
+    } else {
+      this._eventListeners[eventName].push(delegate);
+    }
+  }
 }
+
+export default new BridgeManager();

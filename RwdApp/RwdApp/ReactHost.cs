@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using CefSharp.WinForms;
 using CefSharp;
+using Newtonsoft.Json;
 
 namespace RwdApp
 {
@@ -33,10 +34,12 @@ namespace RwdApp
 			//_browser.LoadingStateChanged += Browser_LoadingStateChanged;
 			_browser.ContextMenu = null;
 
-			foreach (var bridge in bridges)
-			{
-				_browser.RegisterAsyncJsObject(bridge.GetType().Name, bridge);
-			}
+			_browser.RegisterAsyncJsObject("bridgeMediator", new BridgeMediator(_browser, bridges));
+
+			//foreach (var bridge in bridges)
+			//{
+			//	_browser.RegisterAsyncJsObject(bridge.GetType().Name, bridge);
+			//}
 
 			//_browser.AddressChanged += _browser_AddressChanged;
 
@@ -61,4 +64,6 @@ namespace RwdApp
 
 		}
 	}
+
+	
 }
