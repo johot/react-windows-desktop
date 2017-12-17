@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using CefSharp;
 using CefSharp.WinForms;
 using Newtonsoft.Json.Serialization;
+using System.Web;
 
 namespace RwdApp
 {
@@ -50,6 +51,8 @@ namespace RwdApp
 			{
 				ContractResolver = new CamelCasePropertyNamesContractResolver()
 			});
+
+			argsJson = HttpUtility.JavaScriptStringEncode(argsJson);
 
 			_browser.ExecuteScriptAsync("window.bridgeManager.getBridge('" + bridgeName + "').then(bridge => bridge.triggerEvent('" + ConvertToCamelCase(eventName) + "', JSON.parse('" + argsJson + "')))");
 		}
